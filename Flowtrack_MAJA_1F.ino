@@ -342,24 +342,30 @@ void loop() {
   }
 
   // Penanganan tombol reset dengan debounce
-  static bool lastButtonState = HIGH;
-  bool currentButtonState = digitalRead(resetButton);
+//  static bool lastButtonState = HIGH;
+//  bool currentButtonState = digitalRead(resetButton);
+//
+//  if (currentButtonState != lastButtonState) {
+//    lastDebounceTime = millis();
+//  }
+//
+//  if ((millis() - lastDebounceTime) > debounceDelay) {
+//    if (currentButtonState == LOW && lastButtonState == HIGH) {
+//      vol = 0.0;
+//      noInterrupts();
+//      total_pulse = 0;
+//      interrupts();
+//      Serial.println("Volume and Total Pulse reset to 0.");
+//    }
+//  }
+//  lastButtonState = currentButtonState;
 
-  if (currentButtonState != lastButtonState) {
-    lastDebounceTime = millis();
+if (digitalRead(resetButton) == LOW) {
+    vol = 0.0;
+    total_pulse = 0;
+    Serial.println("Volume and Total Pulse reset to 0.");
+    delay(500);
   }
-
-  if ((millis() - lastDebounceTime) > debounceDelay) {
-    if (currentButtonState == LOW && lastButtonState == HIGH) {
-      vol = 0.0;
-      noInterrupts();
-      total_pulse = 0;
-      interrupts();
-      Serial.println("Volume and Total Pulse reset to 0.");
-    }
-  }
-  lastButtonState = currentButtonState;
-
   currentTime = millis();
   if ((unsigned long)(currentTime - cloopTime) >= sendInterval) {
     cloopTime = currentTime;
@@ -385,7 +391,7 @@ void loop() {
       return;
     }
     char timestamp[30];
-    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S WIB", &timeinfo);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%dT%H:%M:%S", &timeinfo);
     Serial.println(timestamp);
     //    String dataPayload = "{\"flowrate\":" + String(flowrate) + ",\"volume\":" + String(vol) + ",\"pulses\":" + String(freq) + ",\"total_pulse\":" + String(total) + "}";
     String dataPayload = "{"
@@ -396,7 +402,7 @@ void loop() {
                          //                             "\"mqtt\": \"" + broker_url + "\","
                          "\"wifi_name\": \"" + WiFi.SSID() + "\","
                          //                             "\"wifi_pass\": \"" + password + "\","
-                         "\"wifi_signal\": " + String(WiFi.RSSI()) + ","
+                         "\"wifi_signal\": \"" + String(WiFi.RSSI()) + "\""
                          //                         "\"ip\": \"" + WiFi.localIP().toString() + "\","
                          //                         "\"mac\": \"" + WiFi.macAddress() + "\","
                          //                             "\"GMT\": \"" + gmt + "\","
